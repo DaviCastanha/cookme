@@ -90,6 +90,8 @@ export const RecipeSchema = z.object({
   servings: z.string().default(''),
   /** Free text, e.g. "50 min", "1h30". */
   time: z.string().default(''),
+  /** Drive file id of the public copy ("link público"); null when the link is off. */
+  publicFileId: z.string().nullable().default(null),
   updatedAt: z.string(),
 });
 export type Recipe = Omit<z.infer<typeof RecipeSchema>, 'content'> & { content: RichContent };

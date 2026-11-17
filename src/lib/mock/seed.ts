@@ -12,9 +12,9 @@ import type { ExplorerItem, Recipe, RichContent } from '@/lib/schemas';
 import { SCHEMA_VERSION } from '@/lib/schemas';
 import { SECTION_TITLES } from '@/features/recipes/content';
 
-export const TUTORIAL_VERSION = 1;
+export const TUTORIAL_VERSION = 2;
 const PID = 'project_tutorial';
-const T0 = '2026-11-15T12:00:00.000Z';
+const T0 = '2026-11-16T12:00:00.000Z';
 
 type Segment = string | { em: string } | { b: string };
 
@@ -76,7 +76,7 @@ function item(
 }
 
 function recipe(id: string, content: RichContent, extra: Partial<Recipe> = {}): Recipe {
-  return { id, projectId: PID, content, coverAssetId: null, coverUrl: null, servings: '', time: '', updatedAt: T0, ...extra };
+  return { id, projectId: PID, content, coverAssetId: null, coverUrl: null, servings: '', time: '', publicFileId: null, updatedAt: T0, ...extra };
 }
 
 /**
@@ -142,7 +142,7 @@ function buildBaseBundle(): ProjectBundle {
           [b('Escreva os ingredientes'), ': cada Enter cria uma nova linha. Para tirar o quadradinho, use o botão de lista na barra.'],
           [b('Escreva o passo a passo'), ': cada Enter cria o próximo passo, já numerado.'],
           [b('Digite “/”'), ' em qualquer linha para inserir título, lista, foto, áudio ou separador. Fotos e áudios também ficam nos botões da barra.'],
-          [b('Organize'), ': arraste receitas e pastas na lista para reordenar ou mover. No menu ⋯ de cada item há Renomear, Ícone e cor, Mover para… e Excluir.'],
+          [b('Organize'), ': arraste receitas e pastas na lista para reordenar ou mover. No celular, segure o item por um instante e arraste. No menu ⋯ de cada item há Renomear, Ícone e cor, Mover para… e Excluir.'],
           [b('Cozinhe'), ': o botão “Cozinhar” abre o passo a passo em tela cheia, com letra grande e a tela sempre acesa.'],
         ),
         h(SECTION_TITLES.tips),
@@ -158,9 +158,11 @@ function buildBaseBundle(): ProjectBundle {
       R.share,
       doc(
         h('Mandar uma receita para alguém'),
-        p('No menu ⋯ de uma receita aberta há duas formas de compartilhar:'),
+        p('No botão de compartilhar de uma receita aberta há quatro jeitos:'),
         ol(
-          [b('Compartilhar como imagem'), ': gera um cartão com a foto, os ingredientes e o modo de preparo. No celular, abre direto o WhatsApp, o Instagram ou o app que você escolher.'],
+          [b('Link público'), ': cria um link que qualquer pessoa abre no navegador, sem conta. Ele acompanha as suas edições, e quem abre pode salvar uma cópia no próprio CookMe. Dá para desativar quando quiser. (Precisa entrar com o Google.)'],
+          [b('Imagem (WhatsApp)'), ': gera um cartão com a foto, os ingredientes e o modo de preparo. No celular, abre direto o WhatsApp ou o app que você escolher.'],
+          [b('Story do Instagram'), ': uma imagem no formato do Story, com a foto, o tempo e os ingredientes.'],
           [b('Enviar arquivo CookMe'), ': gera um arquivo “.cookme” com tudo, inclusive fotos e áudios. Quem recebe usa “Importar receita” no próprio CookMe e ganha uma cópia editável.'],
         ),
         h('Instalar no celular'),

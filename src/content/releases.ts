@@ -13,6 +13,18 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: '1.1.0',
+    date: '2026-11-17',
+    title: 'Link público, Story e arrastar no celular',
+    items: [
+      'Link público: no botão de compartilhar, crie um link da receita que qualquer pessoa abre no navegador, sem conta. Ele acompanha as suas edições e pode ser desativado quando você quiser.',
+      'Quem abre o link pode tocar em “Salvar no meu CookMe” e importar uma cópia da receita, com as fotos.',
+      'Story do Instagram: uma imagem no formato do Story, com a foto, o tempo e os ingredientes.',
+      'No celular, segure uma receita ou pasta por um instante e arraste para reorganizar.',
+      'Nova barra no rodapé do celular: Receitas, a receita aberta e Buscar.',
+    ],
+  },
+  {
     version: '1.0.0',
     date: '2026-11-16',
     title: 'Primeira versão',

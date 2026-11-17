@@ -13,6 +13,8 @@ import {
   Image,
   ImageDown,
   Italic,
+  Link2,
+  Link2Off,
   List,
   ListChecks,
   ListOrdered,
@@ -22,6 +24,7 @@ import {
   Palette,
   Pencil,
   Share2,
+  Smartphone,
   Trash2,
 } from 'lucide-react';
 import { IconButton } from '@/components/ui/Button';
@@ -33,6 +36,9 @@ import { useProjectData } from '@/features/projects/ProjectDataProvider';
 import { uncheckAll } from '@/features/recipes/content';
 import { shareRecipeFile } from '@/features/share/recipeFile';
 import { shareRecipeImage } from '@/features/share/shareImage';
+import { copyLink, createPublicLink, linkFor, removePublicLink, shareLink } from '@/features/share/publicLink';
+import { useSessionStore } from '@/features/auth/sessionStore';
+import { confirmDialog } from '@/stores/dialogStore';
 import * as repo from '@/lib/repository';
 import type { ExplorerItem, Recipe, RichContent } from '@/lib/schemas';
 import { trackSave, useStatusStore } from '@/stores/statusStore';
@@ -61,6 +67,7 @@ export function RecipeToolbar({
   const moreMenu = useMenu();
   const shareMenu = useMenu();
   const folder = itemPath(items, item.id).at(-2);
+  const driveConnected = useSessionStore((s) => s.driveConnected);
 
   const fmt = useEditorState({
     editor,
@@ -83,9 +90,9 @@ export function RecipeToolbar({
   /** Shares the latest text, including edits still waiting for the autosave. */
   const current = (): Recipe => (editor ? { ...recipe, content: editor.getJSON() as RichContent } : recipe);
 
-  const shareAsImage = async () => {
+  const shareAsImage = async (format: 'card' | 'story' = 'card') => {
     try {
-      const result = await shareRecipeImage(item.name, current());
+      const result = await shareRecipeImage(item.name, current(), format);
       if (result === 'downloaded') toast('Imagem baixada. Envie pelo WhatsApp, Instagram ou onde quiser.', 'success');
     } catch (error) {
       toast(error instanceof Error ? error.message : 'Não foi possível gerar a imagem.', 'error');
@@ -101,8 +108,65 @@ export function RecipeToolbar({
     }
   };
 
+  /** Saves pending edits, then creates the public copy and offers to share the link. */
+  const createLink = async () => {
+    try {
+      if (editor) await repo.saveRecipeContent(recipe.id, editor.getJSON() as RichContent);
+      toast('Criando o link público…', 'info');
+      const url = await createPublicLink(recipe.id);
+      const copied = await copyLink(url);
+      // The share sheet needs a fresh tap after the (slow) upload: offer it in the toast.
+      toast(copied ? 'Link público criado e copiado.' : 'Link público criado.', 'success', {
+        label: 'Compartilhar',
+        run: () => void shareLink(item.name, url),
+      });
+    } catch (error) {
+      toast(error instanceof Error ? error.message : 'Não foi possível criar o link.', 'error');
+    }
+  };
+
+  const disableLink = async () => {
+    const ok = await confirmDialog({
+      title: 'Desativar o link público?',
+      message: 'Quem tiver o link não vai mais conseguir abrir a receita. Você pode criar um link novo depois.',
+      confirmLabel: 'Desativar link',
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      await removePublicLink(recipe.id);
+      toast('Link desativado.', 'success');
+    } catch (error) {
+      toast(error instanceof Error ? error.message : 'Não foi possível desativar o link.', 'error');
+    }
+  };
+
+  const linkEntries: MenuEntry[] = !driveConnected
+    ? [{ label: 'Link público', hint: 'Entre com o Google', icon: <Link2 />, disabled: true }]
+    : recipe.publicFileId
+      ? [
+          {
+            label: 'Compartilhar link',
+            icon: <Link2 />,
+            onSelect: async () => {
+              const result = await shareLink(item.name, linkFor(recipe.publicFileId!));
+              if (result === 'copied') toast('Link copiado.', 'success');
+            },
+          },
+          {
+            label: 'Copiar link',
+            icon: <Copy />,
+            onSelect: async () => toast((await copyLink(linkFor(recipe.publicFileId!))) ? 'Link copiado.' : 'Não foi possível copiar.', 'info'),
+          },
+          { label: 'Desativar link', icon: <Link2Off />, danger: true, onSelect: () => void disableLink() },
+        ]
+      : [{ label: 'Criar link público', icon: <Link2 />, onSelect: () => void createLink() }];
+
   const shareEntries: MenuEntry[] = [
-    { label: 'Compartilhar como imagem', icon: <ImageDown />, onSelect: () => void shareAsImage() },
+    ...linkEntries,
+    { kind: 'separator' },
+    { label: 'Imagem (WhatsApp)', icon: <ImageDown />, onSelect: () => void shareAsImage('card') },
+    { label: 'Story do Instagram', icon: <Smartphone />, onSelect: () => void shareAsImage('story') },
     { label: 'Enviar arquivo CookMe', icon: <FileUp />, onSelect: () => void shareAsFile() },
   ];
 

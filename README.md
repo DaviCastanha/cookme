@@ -36,10 +36,11 @@ A versão fica em `package.json` e em `src/content/releases.ts`, que guarda as n
 
 O popup aparece uma vez por versão em cada aparelho; quem acabou de chegar não vê (tudo é novo para essa pessoa).
 
-## O que já funciona (1.0.0)
+## O que já funciona (1.1.0)
 
 - **Cadernos**: criar, renomear, excluir, exportar/importar backup. O app abre direto no último caderno usado.
-- **Pastas e receitas**: árvore com ícone e cor (ícones de comida, cores com nome de ingrediente), arrastar e soltar, Mover para…, Duplicar, renomear com F2 ou duplo clique, contagem de receitas por pasta.
+- **Pastas e receitas**: árvore com ícone e cor (ícones de comida, cores com nome de ingrediente), arrastar e soltar (no celular: segurar e arrastar), Mover para…, Duplicar, renomear com F2 ou duplo clique, contagem de receitas por pasta.
+- **Celular**: barra inferior com Receitas, a receita aberta e Buscar.
 - **Receita**:
   - foto de capa em destaque (câmera, galeria ou link), reduzida automaticamente;
   - tempo e rendimento em texto livre;
@@ -47,15 +48,16 @@ O popup aparece uma vez por versão em cada aparelho; quem acabou de chegar não
   - menu `/` e barra com seção, subtítulo, listas, destaque, foto e áudio; fotos coladas ou arrastadas também entram;
   - salvamento automático.
 - **Modo Cozinhar**: ingredientes para marcar, um passo por tela, letra grande, tela sempre acesa, timer automático quando o passo cita um tempo.
-- **Compartilhar**: cartão-imagem para WhatsApp/Instagram e arquivo `.cookme` (com fotos e áudios) para importar no CookMe de outra pessoa.
+- **Compartilhar**:
+  - **link público** (`/r/<id>`): página da receita para qualquer pessoa, sem conta, que acompanha as edições, com prévia no WhatsApp e botão "Salvar no meu CookMe". A cópia pública fica no Drive de quem compartilhou (`publicas/`); não há banco de dados próprio;
+  - cartão-imagem (WhatsApp) e cartão no formato Story (Instagram, 1080×1920);
+  - arquivo `.cookme` (com fotos e áudios) para importar no CookMe de outra pessoa.
 - **Busca** (Ctrl+K ou barra de busca): por nome, pasta ou ingrediente, levando ao trecho.
 - **Google Drive**: login com um consentimento, pasta visível `CookMe`, sincronização entre aparelhos, offline, tratamento de conflitos.
 - **App instalável** (PWA) no computador e no celular.
 
 ## Fica para depois
 
-- **Link público de receita**: o arquivo da receita já está no Drive da pessoa; dá para torná-lo "qualquer pessoa com o link" e servir uma página de leitura (`/r/<id>`) lendo o Drive com uma chave de API, sem banco de dados próprio.
 - Ajustar porções (recalcular quantidades) e lista de compras a partir dos ingredientes marcados.
-- Cartão no formato Story (1080×1920) para o Instagram.
 - Ler foto de receita escrita à mão (OCR).
 - Tags além das pastas, favoritos e tema escuro.

@@ -67,7 +67,8 @@ export const useStatusStore = create<StatusState>()((set, get) => ({
   toast: (message, tone = 'info', action) => {
     const id = ++toastId;
     set((s) => ({ toasts: [...s.toasts.slice(-3), { id, message, tone, action }] }));
-    setTimeout(() => get().dismissToast(id), tone === 'error' ? 7000 : 4000);
+    // Toasts with a button stay longer, so there is time to tap it.
+    setTimeout(() => get().dismissToast(id), action ? 9000 : tone === 'error' ? 7000 : 4000);
   },
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }));

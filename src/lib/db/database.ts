@@ -2,7 +2,14 @@ import Dexie, { type EntityTable } from 'dexie';
 import type { Asset, ExplorerItem, Project, Recipe } from '@/lib/schemas';
 
 /** A unit of data that maps 1:1 to a file in Drive (see features/sync/units.ts). */
-export type SyncUnit = 'project' | 'explorer' | 'assets' | `recipe:${string}` | `asset:${string}`;
+export type SyncUnit =
+  | 'project'
+  | 'explorer'
+  | 'assets'
+  | `recipe:${string}`
+  | `asset:${string}`
+  /** Only used with op `delete`: trash the public copy (Drive file id) of a deleted recipe. */
+  | `public:${string}`;
 
 export interface SyncQueueEntry {
   /** `${projectId}|${unit}` — one pending entry per file, later writes overwrite earlier ones. */

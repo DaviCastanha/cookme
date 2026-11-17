@@ -10,6 +10,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces', display: 'swap' });
 
 export const metadata: Metadata = {
+  // Absolute URLs for link previews (e.g. the photo of a public recipe on WhatsApp).
+  metadataBase: new URL(process.env.APP_URL ?? 'http://localhost:3000'),
   title: 'CookMe',
   description: 'Seu caderno de receitas: pastas, fotos, ingredientes e passo a passo.',
   applicationName: 'CookMe',

@@ -3,7 +3,7 @@
  * send on WhatsApp, Instagram and the like. Drawn on a canvas in the browser: nothing leaves
  * the device until the person shares it.
  */
-import { getSections, type RecipeSection } from '@/features/recipes/content';
+import { getCookingPlan, getSections, type RecipeSection } from '@/features/recipes/content';
 import { getAssetBlob } from '@/lib/repository';
 import type { Recipe } from '@/lib/schemas';
 import { shareOrDownload, slugify, type ShareOutcome } from './shareFile';
@@ -34,10 +34,14 @@ function readFonts(): Fonts {
   return { serif, sans };
 }
 
-export async function renderRecipeImage(name: string, recipe: Recipe): Promise<Blob> {
+/** `card`: tall image with the whole recipe (WhatsApp). `story`: 1080×1920 for Instagram Stories. */
+export type ImageFormat = 'card' | 'story';
+
+export async function renderRecipeImage(name: string, recipe: Recipe, format: ImageFormat = 'card'): Promise<Blob> {
   await document.fonts?.ready;
   const fonts = readFonts();
   const cover = await loadCover(recipe);
+  if (format === 'story') return renderStory(name, recipe, cover, fonts);
   const sections = getSections(recipe.content);
 
   // First pass measures, second pass draws on a canvas of the right height.
@@ -56,9 +60,128 @@ export async function renderRecipeImage(name: string, recipe: Recipe): Promise<B
   return blob;
 }
 
-export async function shareRecipeImage(name: string, recipe: Recipe): Promise<ShareOutcome> {
-  const blob = await renderRecipeImage(name, recipe);
-  return shareOrDownload([new File([blob], `${slugify(name)}.png`, { type: 'image/png' })], name);
+export async function shareRecipeImage(name: string, recipe: Recipe, format: ImageFormat = 'card'): Promise<ShareOutcome> {
+  const blob = await renderRecipeImage(name, recipe, format);
+  const suffix = format === 'story' ? '-story' : '';
+  return shareOrDownload([new File([blob], `${slugify(name)}${suffix}.png`, { type: 'image/png' })], name);
+}
+
+// ------------------------------------------------------------------ story (1080×1920)
+
+const STORY_H = 1920;
+
+async function renderStory(name: string, recipe: Recipe, cover: ImageBitmap | null, fonts: Fonts): Promise<Blob> {
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = STORY_H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Este navegador não consegue gerar imagens.');
+  const width = W - PAD * 2;
+
+  ctx.fillStyle = C.bg;
+  ctx.fillRect(0, 0, W, STORY_H);
+
+  // Photo on top (or a terracotta band when there is none).
+  let y: number;
+  if (cover) {
+    const h = 860;
+    drawCover(ctx, cover, 0, 0, W, h);
+    // Soft fade into the page, so the text area feels part of the photo.
+    const fade = ctx.createLinearGradient(0, h - 160, 0, h);
+    fade.addColorStop(0, 'rgba(250, 246, 240, 0)');
+    fade.addColorStop(1, C.bg);
+    ctx.fillStyle = fade;
+    ctx.fillRect(0, h - 160, W, 160);
+    cover.close?.();
+    y = h + 40;
+  } else {
+    ctx.fillStyle = C.accent;
+    ctx.fillRect(0, 0, W, 300);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.font = `700 40px ${fonts.serif}`;
+    ctx.fillText('CookMe', PAD, 190);
+    y = 400;
+  }
+
+  // Title (up to 3 lines).
+  ctx.font = `700 84px ${fonts.serif}`;
+  const titleLines = wrap(ctx, name, width);
+  for (const [i, line] of titleLines.slice(0, 3).entries()) {
+    y += 94;
+    ctx.fillStyle = C.ink;
+    ctx.fillText(i === 2 && titleLines.length > 3 ? `${line.slice(0, -1)}…` : line, PAD, y);
+  }
+
+  const meta = [recipe.time && `⏱ ${recipe.time}`, recipe.servings && `Rende ${recipe.servings}`].filter(Boolean).join('   ·   ');
+  if (meta) {
+    y += 70;
+    ctx.font = `600 36px ${fonts.sans}`;
+    ctx.fillStyle = C.accent;
+    ctx.fillText(meta, PAD, y);
+  }
+
+  // Ingredients (or the first steps when the recipe has no ingredient list).
+  const plan = getCookingPlan(recipe.content);
+  const useSteps = !plan.ingredients.length;
+  const lines = useSteps ? plan.steps : plan.ingredients;
+  // Instagram covers ~250 px at the bottom (reply bar): keep the footer above it.
+  const footerTop = STORY_H - 300;
+  if (lines.length) {
+    y += 100;
+    ctx.font = `600 50px ${fonts.serif}`;
+    ctx.fillStyle = C.ink;
+    ctx.fillText(useSteps ? 'Modo de preparo' : 'Ingredientes', PAD, y);
+    ctx.fillStyle = C.accent;
+    ctx.fillRect(PAD, y + 22, 64, 5);
+    y += 40;
+
+    // Shrink the type a little for long lists before giving up and summarizing.
+    let size = 40;
+    let leading = 58;
+    const fits = () => {
+      ctx.font = `400 ${size}px ${fonts.sans}`;
+      const total = lines.reduce((sum, l) => sum + wrap(ctx, l, width - 56).length * leading + 14, 0);
+      return y + total < footerTop - 40;
+    };
+    while (!fits() && size > 32) {
+      size -= 2;
+      leading = Math.round(size * 1.45);
+    }
+    ctx.font = `400 ${size}px ${fonts.sans}`;
+    for (const [i, text] of lines.entries()) {
+      const wrapped = wrap(ctx, text, width - 56);
+      const needed = wrapped.length * leading + 14;
+      const remaining = lines.length - i;
+      if (y + needed > footerTop - 100 && remaining > 1) {
+        y += leading + 14;
+        ctx.font = `italic 500 ${size}px ${fonts.sans}`;
+        ctx.fillStyle = C.muted;
+        ctx.fillText(`+ ${remaining} ${useSteps ? (remaining === 1 ? 'passo' : 'passos') : remaining === 1 ? 'ingrediente' : 'ingredientes'}`, PAD + 56, y);
+        break;
+      }
+      y += 14;
+      ctx.fillStyle = C.accent;
+      ctx.beginPath();
+      ctx.arc(PAD + 12, y + leading - Math.round(size * 0.35), 8, 0, Math.PI * 2);
+      ctx.fill();
+      for (const line of wrapped) {
+        y += leading;
+        ctx.fillStyle = C.ink;
+        ctx.fillText(line, PAD + 56, y);
+      }
+    }
+  }
+
+  // Footer.
+  ctx.fillStyle = C.rule;
+  ctx.fillRect(PAD, footerTop, width, 2);
+  ctx.font = `600 34px ${fonts.serif}`;
+  ctx.fillStyle = C.muted;
+  ctx.fillText('Receita completa no CookMe', PAD, footerTop + 82);
+
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+  if (!blob) throw new Error('Não foi possível gerar a imagem.');
+  return blob;
 }
 
 // ------------------------------------------------------------------ drawing

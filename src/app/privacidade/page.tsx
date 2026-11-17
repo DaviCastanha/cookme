@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: 'Política de Privacidade · CookMe' 
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="Política de Privacidade" updated="16 de novembro de 2026">
+    <LegalPage title="Política de Privacidade" updated="17 de novembro de 2026">
       <p>
         O CookMe é um aplicativo para guardar e organizar receitas. Esta política explica quais dados o app acessa, como
         eles são usados e onde ficam guardados.
@@ -32,6 +32,13 @@ export default function PrivacyPage() {
         <li>
           <strong>Compartilhamento</strong>: a imagem e o arquivo de uma receita são gerados no seu aparelho e só saem dele
           quando você os envia, pelo app que escolher (WhatsApp, Instagram, e-mail…).
+        </li>
+        <li>
+          <strong>Link público (opcional)</strong>: só existe quando você cria. O app grava uma cópia da receita na pasta
+          “publicas” do seu caderno no Drive e a deixa, junto com as fotos e os áudios dela, visível para{' '}
+          <strong>qualquer pessoa que tenha o link</strong> (ela não aparece em buscas). O servidor do CookMe lê essa
+          cópia para montar a página da receita, sem guardá-la. Ao desativar o link, a cópia vai para a lixeira do seu
+          Drive e as fotos voltam a ser privadas.
         </li>
       </ul>
 

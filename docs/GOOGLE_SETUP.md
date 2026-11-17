@@ -51,6 +51,10 @@ Copie o **ID do cliente** e a **chave secreta**.
 | `GOOGLE_CLIENT_ID` | ID do cliente |
 | `GOOGLE_CLIENT_SECRET` | Chave secreta |
 | `SESSION_SECRET` | 32+ caracteres aleatórios. Gere com o comando abaixo |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Opcional. E-mail de contato da Política de Privacidade e dos Termos |
+| `GOOGLE_API_KEY` | Recomendado para links públicos (veja abaixo) |
+
+**Chave de API para os links públicos.** A página `/r/<id>` lê a cópia pública da receita sem login. Com uma chave de API ela usa a API oficial do Drive; sem chave, usa o endereço público de download do Google, que funciona mas é menos garantido. Para criar a chave: **APIs e serviços → Credenciais → Criar credenciais → Chave de API**. Depois, em **Restrições de API**, permita só a **Google Drive API**. Ela não dá acesso a nenhum arquivo privado: só lê o que já está como "qualquer pessoa com o link".
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"

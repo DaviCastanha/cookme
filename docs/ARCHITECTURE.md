@@ -68,13 +68,22 @@ Tela cheia sobre o app (`components/recipe/CookingMode.tsx`): primeiro os ingred
 
 ### 6. Compartilhar
 
-- **Como imagem**: um cartão PNG (1080 px de largura) desenhado num `<canvas>` no próprio aparelho (`features/share/shareImage.ts`), com foto, título, tempo, seções e passos. Abre a folha de compartilhamento do sistema (WhatsApp, Instagram…) via Web Share API; sem suporte, baixa o arquivo.
+- **Como imagem**: PNG desenhado num `<canvas>` no próprio aparelho (`features/share/shareImage.ts`). Dois formatos: **cartão** (1080 px de largura, altura variável, receita inteira) e **Story** (1080×1920: foto, título, tempo e ingredientes; a fonte diminui um pouco para listas longas e o resto vira "+ N ingredientes"; o rodapé fica fora dos ~250 px que o Instagram cobre). Abre a folha de compartilhamento do sistema via Web Share API; sem suporte, baixa o arquivo.
 - **Arquivo `.cookme`**: JSON com a receita e as fotos/áudios embutidos em base64 (`features/share/recipeFile.ts`). Quem recebe usa **Importar receita**; o app cria uma cópia com ids novos. Como algumas folhas de compartilhamento só aceitam certos tipos, o app tenta `.cookme` e depois `.cookme.txt`; a importação aceita os dois.
-- **Link público**: ficou para depois (ver README).
+
+### 6b. Link público, sem banco de dados
+
+- **Criar** (`syncEngine.publish`): envia as mudanças pendentes, grava uma **cópia pública** em `cadernos/<id>/publicas/<receitaId>.json` (nome, capa, tempo, rendimento, corpo e o id no Drive de cada foto/áudio) e marca a cópia e essas fotos como "qualquer pessoa com o link" (`/api/drive/share`, permissão `anyone`/`reader`, sem aparecer em buscas). O id da cópia vai para `Recipe.publicFileId`, então os outros aparelhos também sabem que o link existe.
+- **Atualizar**: sempre que a receita é enviada ao Drive e tem `publicFileId`, o motor regrava a cópia (`refreshPublicCopies`). Só fotos ainda não compartilhadas geram chamadas de permissão (lista em `meta`, `public:<receitaId>`).
+- **Desativar** (`unpublish`): a cópia vai para a lixeira e as fotos voltam a ser privadas. Excluir a receita também manda a cópia para a lixeira (unidade `public:<fileId>` na fila).
+- **Página** `/r/<fileId>` (servidor, `lib/server/publicDrive.ts`): lê a cópia pública com `GOOGLE_API_KEY` (API oficial) ou, sem chave, pelo download público do Google; revalida a cada 60 s. Fotos e áudios passam por `/r/<id>/arquivo/<assetId>`, que só entrega arquivos listados naquela cópia (não é um proxy aberto do Drive) e deixa o CDN guardar. `/r/<id>/cookme` monta um `.cookme` para "Salvar no meu CookMe". O corpo é renderizado no servidor por `components/public/RecipeContent.tsx` com as mesmas classes `.cm-prose` do editor; links só `http(s)`.
+- A cópia pública é separada do arquivo da receita para que o arquivo original (e o resto do caderno) continue privado.
 
 ### 7. Layout
 
-PC/tablet: lista de pastas e receitas à esquerda (redimensionável, Ctrl+\ esconde) e a receita aberta à direita. Celular: duas telas (lista → receita), com "voltar" na barra da receita. Uma receita aberta por vez; não há abas.
+PC/tablet: lista de pastas e receitas à esquerda (redimensionável, Ctrl+\ esconde) e a receita aberta à direita. Celular: duas telas trocadas pela barra inferior (Receitas · receita aberta · Buscar); a seta "voltar" da receita só mostra a lista, sem fechar a receita. Uma receita aberta por vez; não há abas.
+
+No celular, o arrastar e soltar do HTML não funciona com o dedo. A lista usa "segurar e arrastar" (`useTouchDrag` em `ExplorerTree.tsx`): segurar parado por ~0,4 s pega o item (vibra), e um deslize rápido continua rolando a lista. Enquanto arrasta, a página não rola, a lista rola sozinha nas bordas e um rótulo segue o dedo. Em pastas, o terço de cima insere antes e o resto solta dentro. O menu de contexto do toque longo é ignorado (o menu fica no ⋯).
 
 ### 8. Abrir direto no último caderno
 
@@ -97,6 +106,7 @@ Meu Drive/
     cadernos/<id>/
       caderno.json  pastas.json  arquivos.json
       receitas/<receitaId>.json
+      publicas/<receitaId>.json     cópia pública (só existe com o link ativo)
       arquivos/fotos/<assetId>.jpg
       arquivos/audios/<assetId>.m4a
 ```

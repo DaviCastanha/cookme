@@ -151,6 +151,7 @@ export function newRecipe(id: string, projectId: string, content?: RichContent):
     coverUrl: null,
     servings: '',
     time: '',
+    publicFileId: null,
     updatedAt: nowIso(),
   };
 }
@@ -220,6 +221,9 @@ export async function deleteItem(id: string) {
     for (const node of subtree) {
       await db.items.delete(node.id);
       if (node.type === 'recipe') {
+        // A deleted recipe takes its public link with it.
+        const publicFileId = (await db.recipes.get(node.id))?.publicFileId;
+        if (publicFileId) await enqueue(item.projectId, `public:${publicFileId}`, 'delete');
         await db.recipes.delete(node.id);
         await enqueue(item.projectId, `recipe:${node.id}`, 'delete');
       }

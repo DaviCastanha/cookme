@@ -31,6 +31,8 @@
   font-size: var(--text-sm);
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   text-align: left;
 
   &:hover {
@@ -165,4 +167,21 @@
   line-height: 18px;
   text-align: center;
   color: var(--color-muted);
+}
+
+// The item following the finger while dragging on a phone.
+.ghost {
+  position: fixed;
+  z-index: var(--z-popover);
+  transform: translate(-50%, -130%);
+  max-width: 70vw;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-pop);
+  pointer-events: none;
+  @include truncate;
 }

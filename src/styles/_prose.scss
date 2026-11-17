@@ -295,3 +295,29 @@
   font-size: var(--text-sm);
   background: var(--color-bg-sunken);
 }
+
+// Audio on the public recipe page (the editor uses its own audio block).
+.cm-public-audio {
+  margin: 1em 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-inset);
+
+  figcaption {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-text-soft);
+  }
+
+  audio {
+    width: 100%;
+  }
+}
+
+// Checked items on the public page (plain checkbox, no editor attributes).
+.cm-prose-readonly ul[data-type='taskList'] li:has(input:checked) > div {
+  color: var(--color-checked);
+  text-decoration: line-through;
+}

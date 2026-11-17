@@ -135,3 +135,24 @@ export function trash(token: string, fileId: string) {
     body: JSON.stringify({ trashed: true }),
   });
 }
+
+/**
+ * Turns "anyone with the link can view" on or off for a file. Only files CookMe created can be
+ * changed (drive.file scope), which is exactly the public copy of a recipe and its photos.
+ */
+export async function setPublic(token: string, fileId: string, isPublic: boolean) {
+  const base = `${API}/files/${encodeURIComponent(fileId)}/permissions`;
+  if (isPublic) {
+    await call(token, `${base}?fields=id`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'anyone', role: 'reader', allowFileDiscovery: false }),
+    });
+    return;
+  }
+  try {
+    await call(token, `${base}/anyoneWithLink`, { method: 'DELETE' });
+  } catch (error) {
+    if (!(error instanceof DriveError && error.status === 404)) throw error;
+  }
+}

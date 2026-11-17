@@ -10,7 +10,10 @@
  *   Drive version is kept as a `*.conflict-<date>.json` copy next to it. Nothing is lost.
  */
 import { getDb, type SyncQueueEntry, type SyncUnit } from '@/lib/db/database';
-import { deleteProject, enqueue, onLocalWrite } from '@/lib/repository';
+import { deleteProject, enqueue, onLocalWrite, saveRecipe } from '@/lib/repository';
+import { getAssetIds } from '@/features/recipes/content';
+import { PUBLIC_DIR, PUBLIC_FORMAT, type PublicRecipe } from '@/features/share/publicRecipe';
+import { nowIso } from '@/lib/utils/id';
 import { AppIndexFileSchema, SCHEMA_VERSION, type AppIndexFile } from '@/lib/schemas';
 import { useStatusStore } from '@/stores/statusStore';
 import { driveClient, SyncHttpError, type RemoteFile } from './driveClient';
@@ -104,6 +107,107 @@ export class SyncEngine {
   setActiveProject(projectId: string | null) {
     this.activeProject = projectId;
     if (this.running && projectId) this.schedule(0);
+  }
+
+  // ------------------------------------------------------------------ public links
+
+  /**
+   * Creates (or updates) the public copy of a recipe and returns its Drive file id. Pending
+   * changes are uploaded first, so every photo already has a Drive file to share.
+   */
+  publish(recipeId: string): Promise<string> {
+    if (!this.running) return Promise.reject(new Error('Entre com o Google para criar links públicos.'));
+    return this.exclusive(async () => {
+      await this.flush();
+      return this.publishSnapshot(recipeId);
+    });
+  }
+
+  /** Turns the public link off: the public copy goes to the trash and the photos become private again. */
+  unpublish(recipeId: string): Promise<void> {
+    if (!this.running) return Promise.reject(new Error('Entre com o Google para mudar o link público.'));
+    return this.exclusive(async () => {
+      const db = getDb();
+      const recipe = await db.recipes.get(recipeId);
+      if (!recipe?.publicFileId) return;
+      await driveClient.trash(recipe.publicFileId).catch(ignoreNotFound);
+      const shared = ((await db.meta.get(`public:${recipeId}`))?.value as string[] | undefined) ?? [];
+      const others = shared.filter((id) => id !== recipe.publicFileId);
+      if (others.length) await driveClient.share(others, false).catch(ignoreNotFound);
+      await db.meta.delete(`public:${recipeId}`);
+      await saveRecipe(recipeId, { publicFileId: null });
+    });
+  }
+
+  private async publishSnapshot(recipeId: string): Promise<string> {
+    const db = getDb();
+    const [recipe, item] = await Promise.all([db.recipes.get(recipeId), db.items.get(recipeId)]);
+    if (!recipe || !item) throw new Error('Receita não encontrada.');
+
+    // Drive file of every photo/audio the recipe uses.
+    const files: Record<string, string> = {};
+    const mimeTypes: Record<string, string> = {};
+    const assetIds = [...new Set([...(recipe.coverAssetId ? [recipe.coverAssetId] : []), ...getAssetIds(recipe.content)])];
+    for (const id of assetIds) {
+      const asset = await db.assets.get(id);
+      if (!asset) continue;
+      const record = await db.driveFiles.get(locationKey(unitLocation(recipe.projectId, `asset:${id}`, asset.mimeType)));
+      if (!record) continue;
+      files[id] = record.fileId;
+      mimeTypes[id] = asset.mimeType;
+    }
+
+    const snapshot: PublicRecipe = {
+      format: PUBLIC_FORMAT,
+      version: 1,
+      publishedAt: nowIso(),
+      name: item.name,
+      icon: item.icon,
+      color: item.color,
+      time: recipe.time,
+      servings: recipe.servings,
+      coverAssetId: recipe.coverAssetId,
+      coverUrl: recipe.coverUrl,
+      content: recipe.content,
+      files,
+      mimeTypes,
+    };
+    const parentId = await this.folderId([...projectDirs(recipe.projectId), PUBLIC_DIR]);
+    const upload = (fileId?: string) =>
+      driveClient.upload({ parentId, name: `${recipeId}.json`, fileId, body: JSON.stringify(snapshot), mimeType: 'application/json' });
+    let result: RemoteFile;
+    try {
+      result = await upload(recipe.publicFileId ?? undefined);
+    } catch (error) {
+      if (!(error instanceof SyncHttpError && error.status === 404 && recipe.publicFileId)) throw error;
+      result = await upload(); // The public copy was removed in Drive: make a new one.
+    }
+
+    // Share only what is not shared yet (each call is a request to Google).
+    const key = `public:${recipeId}`;
+    const shared = new Set(((await db.meta.get(key))?.value as string[] | undefined) ?? []);
+    const toShare = [result.id, ...Object.values(files)].filter((id) => !shared.has(id));
+    if (toShare.length) {
+      await driveClient.share(toShare, true);
+      toShare.forEach((id) => shared.add(id));
+      await db.meta.put({ key, value: [...shared] });
+    }
+    if (recipe.publicFileId !== result.id) await saveRecipe(recipeId, { publicFileId: result.id });
+    return result.id;
+  }
+
+  /** Like `run`, but hands back the result (or the error) to the caller. */
+  private exclusive<T>(work: () => Promise<T>): Promise<T> {
+    const result = (this.busy ?? Promise.resolve()).then(work);
+    const tail = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    this.busy = tail;
+    void tail.then(() => {
+      if (this.busy === tail) this.busy = null;
+    });
+    return result;
   }
 
   /** Push pending changes, then pull the open project. */
@@ -241,6 +345,7 @@ export class SyncEngine {
 
     let indexDirty = false;
     let remaining = entries.length;
+    const pushedRecipes = new Set<string>();
     for (const entry of entries) {
       if (!this.running) return;
       try {
@@ -257,12 +362,27 @@ export class SyncEngine {
         continue;
       }
       if (entry.unit === 'project') indexDirty = true;
+      if (entry.unit.startsWith('recipe:') && entry.op === 'put') pushedRecipes.add(entry.unit.slice(7));
       // Only drop the entry if no newer write replaced it while uploading.
       const current = await db.syncQueue.get(entry.key);
       if (current && current.queuedAt === entry.queuedAt) await db.syncQueue.delete(entry.key);
       this.setSync('syncing', { pending: --remaining });
     }
     if (indexDirty) await this.writeAppIndex();
+    await this.refreshPublicCopies(pushedRecipes);
+  }
+
+  /** Recipes with a public link: their public copy follows every edit. */
+  private async refreshPublicCopies(recipeIds: Set<string>) {
+    for (const id of recipeIds) {
+      const recipe = await getDb().recipes.get(id);
+      if (!recipe?.publicFileId) continue;
+      try {
+        await this.publishSnapshot(id);
+      } catch (error) {
+        console.error('[sync] public copy', error);
+      }
+    }
   }
 
   private async pushEntry(entry: SyncQueueEntry) {
@@ -276,6 +396,12 @@ export class SyncEngine {
       await db.driveFiles.filter((r) => r.path.includes(dir)).delete();
       const deleted = ((await db.meta.get('deletedProjects'))?.value as string[] | undefined) ?? [];
       await db.meta.put({ key: 'deletedProjects', value: [...new Set([...deleted, projectId])] });
+      return;
+    }
+
+    if (unit.startsWith('public:')) {
+      // The public copy of a deleted recipe.
+      await driveClient.trash(unit.slice(7)).catch(ignoreNotFound);
       return;
     }
 

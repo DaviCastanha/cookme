@@ -23,6 +23,8 @@ interface FakeFile {
 
 class FakeDrive {
   files = new Map<string, FakeFile>();
+  /** File ids shared as "anyone with the link". */
+  publicIds = new Set<string>();
   private seq = 0;
 
   private create(name: string, parent: string, mimeType: string, content = ''): FakeFile {
@@ -96,6 +98,15 @@ class FakeDrive {
         return json({ ok: true });
       }
       return new Response(f.content, { headers: { 'Content-Type': f.mimeType } });
+    }
+    if (p === '/api/drive/share') {
+      const { fileIds, public: isPublic } = JSON.parse(String(init.body)) as { fileIds: string[]; public: boolean };
+      for (const id of fileIds) {
+        if (!this.files.has(id)) return json({ error: 'not found' }, 404);
+        if (isPublic) this.publicIds.add(id);
+        else this.publicIds.delete(id);
+      }
+      return json({ ok: true });
     }
     if (p === '/api/drive/upload') {
       const q = url.searchParams;
@@ -318,5 +329,56 @@ describe('Drive sync', () => {
     expect(drive.paths().some((p) => p.includes(`cadernos/${PID}/`))).toBe(false);
     const index = JSON.parse(drive.fileAt('CookMe/app-index.json')!.content);
     expect(index.projects.find((p: { id: string }) => p.id === PID)?.deleted).toBe(true);
+  });
+});
+
+describe('Public links', () => {
+  async function withPhoto() {
+    let assetId = '';
+    const a = await startDevice('a', async () => {
+      await repo.importBundle(demo, { enqueueSync: false });
+      assetId = (await repo.addAsset(PID, new Blob(['foto'], { type: 'image/jpeg' }), 'bolo.jpg')).id;
+      await repo.saveRecipe(BOLO, { coverAssetId: assetId });
+    });
+    return { a, assetId };
+  }
+
+  it('publishes a public copy and shares it with the recipe photos', async () => {
+    drive = new FakeDrive();
+    const { a, assetId } = await withPhoto();
+    const fileId = await on(a, () => a.engine.publish(BOLO));
+
+    const copy = JSON.parse(drive.fileAt(`${ROOT}/publicas/${BOLO}.json`)!.content);
+    expect(copy).toMatchObject({ format: 'cookme-public', name: 'Bolo de cenoura com chocolate', time: '1h10', coverAssetId: assetId });
+    const photoFileId = copy.files[assetId];
+    expect(photoFileId).toBeTruthy();
+    expect(drive.publicIds).toEqual(new Set([fileId, photoFileId]));
+    expect((await on(a, () => repo.getRecipe(BOLO)))?.publicFileId).toBe(fileId);
+    // The recipe file itself stays private.
+    expect(drive.publicIds.has(drive.fileAt(`${ROOT}/receitas/${BOLO}.json`)!.id)).toBe(false);
+  });
+
+  it('keeps the public copy up to date and turns it off', async () => {
+    drive = new FakeDrive();
+    const { a } = await withPhoto();
+    const fileId = await on(a, () => a.engine.publish(BOLO));
+
+    await on(a, () => repo.saveRecipe(BOLO, { time: '45 min' }));
+    await sync(a);
+    expect(JSON.parse(drive.files.get(fileId)!.content).time).toBe('45 min');
+
+    await on(a, () => a.engine.unpublish(BOLO));
+    expect(drive.files.get(fileId)!.trashed).toBe(true);
+    expect(drive.publicIds.size).toBe(1); // only the trashed copy keeps its (now useless) flag
+    expect((await on(a, () => repo.getRecipe(BOLO)))?.publicFileId).toBeNull();
+  });
+
+  it('removes the public copy when the recipe is deleted', async () => {
+    drive = new FakeDrive();
+    const { a } = await withPhoto();
+    const fileId = await on(a, () => a.engine.publish(BOLO));
+    await on(a, () => repo.deleteItem(BOLO));
+    await sync(a);
+    expect(drive.files.get(fileId)!.trashed).toBe(true);
   });
 });

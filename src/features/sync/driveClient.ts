@@ -69,5 +69,13 @@ export const driveClient = {
     });
   },
 
+  /** "Anyone with the link can view" on (public) or off. */
+  share: (fileIds: string[], isPublic: boolean) =>
+    request<{ ok: true }>('/api/drive/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileIds, public: isPublic }),
+    }),
+
   trash: (fileId: string) => request<{ ok: true }>(`/api/drive/files/${encodeURIComponent(fileId)}`, { method: 'DELETE' }),
 };
