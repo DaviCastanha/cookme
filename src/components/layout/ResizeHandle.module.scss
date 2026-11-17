@@ -1,0 +1,26 @@
+.handle {
+  position: relative;
+  width: 1px;
+  background: var(--color-border);
+  cursor: col-resize;
+  flex-shrink: 0;
+  touch-action: none;
+
+  // Wider invisible hit area.
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -4px;
+    right: -4px;
+    z-index: 5;
+  }
+
+  &:hover,
+  &:focus-visible,
+  &:active {
+    background: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
+  }
+}

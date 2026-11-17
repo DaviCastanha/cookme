@@ -1,0 +1,105 @@
+// Design tokens. Components must use these variables, never hard-coded colors.
+// A dark theme would override the same variables.
+
+:root {
+  color-scheme: light;
+
+  // Warm kitchen tones: cream paper, espresso ink, terracotta accent.
+  --color-bg: #faf6f0;
+  --color-bg-sunken: #f3ece2;
+  --color-surface: #fffdf9;
+  --color-surface-hover: #f8f2ea;
+  --color-text: #2a211b;
+  --color-text-soft: #4d4138;
+  --color-muted: #7d7065;
+  --color-faint: #b0a497;
+  --color-primary: #c2562f;
+  --color-primary-strong: #a3431f;
+  --color-primary-soft: #f8e5da;
+  --color-primary-softer: #fcf2ec;
+  --color-on-primary: #ffffff;
+  --color-border: #ece3d8;
+  --color-border-strong: #dccfbf;
+  --color-focus: rgba(194, 86, 47, 0.3);
+  --color-overlay: rgba(42, 33, 27, 0.32);
+  --color-danger: #c13f4f;
+  --color-danger-soft: #fae6e8;
+  --color-success: #4a8a55;
+  --color-success-soft: #e5f2e7;
+  --color-warning: #b7791f;
+  --color-warning-soft: #fdf3e1;
+  --color-highlight: rgba(194, 86, 47, 0.14);
+  --color-search-hit: rgba(250, 204, 21, 0.45);
+  --color-checked: #a99b8d;
+
+  // Item palette (folder/recipe icons), named after ingredients. Strong (icon) and soft (chip) tones.
+  --palette-tomato: #d2553f;
+  --palette-tomato-soft: #fbe4de;
+  --palette-carrot: #df7a2c;
+  --palette-carrot-soft: #fcebdb;
+  --palette-saffron: #cf9a12;
+  --palette-saffron-soft: #fbf0d3;
+  --palette-olive: #868b34;
+  --palette-olive-soft: #efefd9;
+  --palette-basil: #4a9558;
+  --palette-basil-soft: #e2f1e4;
+  --palette-mint: #2f978a;
+  --palette-mint-soft: #dcf1ee;
+  --palette-blueberry: #4e6cc1;
+  --palette-blueberry-soft: #e3e8f8;
+  --palette-plum: #8a58a8;
+  --palette-plum-soft: #efe4f5;
+  --palette-beet: #b6406c;
+  --palette-beet-soft: #f7e0e9;
+  --palette-cinnamon: #a8683a;
+  --palette-cinnamon-soft: #f4e7db;
+  --palette-cocoa: #6e4a38;
+  --palette-cocoa-soft: #ece2dc;
+  --palette-pepper: #6f6a66;
+  --palette-pepper-soft: #edeae7;
+
+  --font-ui: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.875rem;
+  --text-display: clamp(1.9rem, 1.4rem + 1.6vw, 2.6rem);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-full: 999px;
+
+  --shadow-soft: 0 8px 28px rgba(60, 38, 22, 0.08);
+  --shadow-pop: 0 14px 44px rgba(60, 38, 22, 0.16), 0 2px 6px rgba(60, 38, 22, 0.06);
+  --shadow-fab: 0 10px 26px rgba(194, 86, 47, 0.38);
+  --shadow-inset: inset 0 0 0 1px var(--color-border);
+
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --z-panel: 10;
+  --z-header: 20;
+  --z-fab: 40;
+  --z-popover: 60;
+  --z-modal: 80;
+  --z-toast: 100;
+
+  --mobile-nav-height: 64px;
+  --editor-max-width: 760px;
+}

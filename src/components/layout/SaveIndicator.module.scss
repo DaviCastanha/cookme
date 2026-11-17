@@ -1,0 +1,60 @@
+@use 'mixins' as *;
+
+.indicator {
+  @include reset-button;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  white-space: nowrap;
+  cursor: default;
+}
+
+button.indicator {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-hover);
+  }
+}
+
+.compact {
+  width: 30px;
+  justify-content: center;
+  padding: 0;
+}
+
+.label {
+  @include truncate;
+}
+
+.ok svg {
+  color: var(--color-success);
+}
+
+.busy svg {
+  color: var(--color-primary);
+}
+
+.warn {
+  color: var(--color-warning);
+}
+
+.error {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

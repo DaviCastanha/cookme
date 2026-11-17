@@ -1,0 +1,125 @@
+@use 'mixins' as *;
+
+.button {
+  @include reset-button;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast),
+    box-shadow var(--duration-fast);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.md {
+  height: 38px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-md);
+}
+
+.sm {
+  height: 30px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.block {
+  width: 100%;
+}
+
+.primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-strong);
+  }
+}
+
+.soft {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-primary-soft) 70%, var(--color-primary) 30%);
+  }
+}
+
+.ghost {
+  color: var(--color-text-soft);
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+}
+
+.outline {
+  background: var(--color-surface);
+  color: var(--color-text-soft);
+  box-shadow: var(--shadow-inset);
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-hover);
+  }
+}
+
+.danger {
+  background: var(--color-danger);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.94);
+  }
+}
+
+.iconButton {
+  @include reset-button;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-muted);
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-softer);
+    color: var(--color-text);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.icon-sm {
+  width: 26px;
+  height: 26px;
+}
+
+.icon-md {
+  width: 32px;
+  height: 32px;
+}
+
+.icon-lg {
+  width: 40px;
+  height: 40px;
+}
+
+.active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+}

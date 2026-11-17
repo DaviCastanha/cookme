@@ -1,0 +1,284 @@
+@use 'mixins' as *;
+
+.page {
+  min-height: 100dvh;
+  padding: var(--space-8) var(--space-6) var(--space-10);
+  max-width: 1080px;
+  margin: 0 auto;
+
+  @include mobile {
+    padding: var(--space-5) var(--space-4) var(--space-8);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-10);
+
+  @include mobile {
+    margin-bottom: var(--space-6);
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: 2.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  p {
+    color: var(--color-muted);
+    font-family: var(--font-serif);
+  }
+
+  @include mobile {
+    h1 {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 8px 20px rgba(194, 86, 47, 0.3);
+  transform: rotate(-6deg);
+
+  @include mobile {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+
+  h2 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+  }
+}
+
+.toolbarActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+
+  // Phone: "Novo caderno" on its own row, the two secondary actions side by side below.
+  @include mobile {
+    width: 100%;
+
+    > button {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    > button:last-child {
+      order: -1;
+      flex-basis: 100%;
+    }
+  }
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.card {
+  position: relative;
+  @include card;
+  border-radius: var(--radius-lg);
+  transition:
+    box-shadow var(--duration-base),
+    transform var(--duration-base);
+
+  &:hover {
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-2px);
+  }
+}
+
+.cardLink {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-5);
+  color: inherit;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.cardCover {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-md);
+  background: linear-gradient(140deg, var(--color-primary-soft), var(--palette-saffron-soft));
+  color: var(--color-primary-strong);
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.cardName {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: 1.25;
+  padding-right: var(--space-6);
+}
+
+.cardDesc {
+  font-size: var(--text-sm);
+  color: var(--color-text-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardMeta {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.cardDate {
+  font-size: var(--text-xs);
+  color: var(--color-faint);
+}
+
+.cardMenu {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+}
+
+.newCard {
+  @include reset-button;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+  min-height: 190px;
+  border: 1.5px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--color-muted);
+  font-weight: 500;
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary-strong);
+    background: var(--color-primary-softer);
+  }
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.spin {
+  color: var(--color-primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty {
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-softer);
+  text-align: center;
+
+  h3 {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 600;
+  }
+
+  p {
+    max-width: 440px;
+    margin: var(--space-2) auto var(--space-4);
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+  }
+}
+
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+  font-size: var(--text-sm);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.cardCoverTutorial {
+  @extend .cardCover;
+  background: linear-gradient(140deg, var(--palette-basil-soft), var(--palette-saffron-soft));
+  color: var(--palette-basil);
+}
+
+.version {
+  @include reset-button;
+  color: var(--color-muted);
+
+  &:hover {
+    color: var(--color-primary);
+  }
+}

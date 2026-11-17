@@ -1,0 +1,69 @@
+@use 'mixins' as *;
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-weight: 500;
+}
+
+.label {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+}
+
+.colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.swatch {
+  @include reset-button;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+  transition: transform var(--duration-fast);
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  &.selected {
+    box-shadow:
+      0 0 0 2px var(--color-surface),
+      0 0 0 4px var(--color-text);
+  }
+}
+
+.icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 4px;
+}
+
+.iconChoice {
+  @include reset-button;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-soft);
+
+  &:hover {
+    background: var(--color-primary-softer);
+  }
+
+  &.selected {
+    background: var(--color-primary-soft);
+    box-shadow: inset 0 0 0 1.5px var(--color-primary);
+  }
+}

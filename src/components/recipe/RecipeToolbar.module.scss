@@ -1,0 +1,138 @@
+@use 'mixins' as *;
+
+.header {
+  position: relative;
+  z-index: var(--z-header);
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 54px;
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-5);
+
+  @include mobile {
+    padding: var(--space-1) var(--space-2) 0;
+    padding-top: calc(var(--space-1) + env(safe-area-inset-top));
+    gap: var(--space-1);
+  }
+}
+
+.back {
+  @include reset-button;
+  display: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+
+  &:hover {
+    background: var(--color-surface-hover);
+  }
+
+  @include mobile {
+    display: grid;
+  }
+}
+
+.crumbs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.folder {
+  @include reset-button;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 4px 10px 4px 8px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-soft);
+
+  span {
+    @include truncate;
+  }
+
+  &:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+}
+
+.folderMuted {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  @include truncate;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  // Narrow screens: the tools get their own scrollable row under the title bar.
+  @media (max-width: 1099px) {
+    order: 10;
+    flex-basis: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 2px 0 var(--space-1);
+    margin: 0 calc(var(--space-2) * -1);
+    padding-left: var(--space-2);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    > * {
+      flex-shrink: 0;
+    }
+  }
+}
+
+.sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.cook {
+  @include reset-button;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  margin-right: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(194, 86, 47, 0.25);
+  transition: background var(--duration-fast);
+
+  &:hover {
+    background: var(--color-primary-strong);
+  }
+}

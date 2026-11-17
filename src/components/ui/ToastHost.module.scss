@@ -1,0 +1,83 @@
+@use 'mixins' as *;
+
+.host {
+  position: fixed;
+  z-index: var(--z-toast);
+  left: 50%;
+  bottom: var(--space-6);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+
+  @include mobile {
+    bottom: calc(var(--mobile-nav-height) + 76px + env(safe-area-inset-bottom));
+  }
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-text);
+  color: #fff;
+  font-size: var(--text-sm);
+  box-shadow: var(--shadow-pop);
+  animation: in var(--duration-base) var(--ease-out);
+}
+
+.success svg:first-child {
+  color: #8ee0b4;
+}
+
+.error svg:first-child {
+  color: #ff9fae;
+}
+
+.info svg:first-child {
+  color: #c9b6f3;
+}
+
+.message {
+  max-width: 420px;
+}
+
+.action {
+  @include reset-button;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  color: #d9c9ff;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.close {
+  @include reset-button;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.7);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+@keyframes in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

@@ -1,0 +1,135 @@
+@use 'mixins' as *;
+
+.shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.left {
+  width: var(--left-width);
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.center {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  > section {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+.hideLeft .left {
+  display: none;
+}
+
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 34px;
+  padding: 0 var(--space-2);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+
+.statusSpacer {
+  flex: 1;
+}
+
+.mobileNav {
+  display: none;
+}
+
+// ---------------------------------------------------------------- phone
+
+@include mobile {
+  .left,
+  .center {
+    display: none;
+    width: 100%;
+  }
+
+  .shell[data-view='list'] .left,
+  .shell[data-view='recipe'] .center {
+    display: flex;
+    flex-direction: column;
+
+    > * {
+      flex: 1;
+      min-height: 0;
+    }
+  }
+
+  .left {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .statusBar {
+    display: none;
+  }
+
+  .mobileNav {
+    display: flex;
+    flex-shrink: 0;
+    height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .navItem {
+    appearance: none;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 var(--space-2);
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+    font-weight: 500;
+
+    span {
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .navActive {
+    color: var(--color-primary-strong);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 32px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--color-primary);
+    }
+  }
+}
