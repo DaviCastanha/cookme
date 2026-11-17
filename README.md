@@ -15,7 +15,7 @@ npm run dev          # http://localhost:3000
 
 **Sem Google configurado (modo local):** o app cria o **Caderno de exemplo** e salva tudo no navegador. É o mais prático para desenvolver.
 
-**Com Google configurado (como na Vercel):** o login é obrigatório, e cada pessoa guarda os cadernos na pasta `CookMe` do próprio Google Drive. Para configurar o Google Cloud, as variáveis e o deploy (ex.: `cookme-receitas.vercel.app`), siga [docs/GOOGLE_SETUP.md](docs/GOOGLE_SETUP.md).
+**Com Google configurado (como na Vercel):** o login é obrigatório, e cada pessoa guarda os cadernos na pasta `CookMe` do próprio Google Drive. Para configurar o Google Cloud, as variáveis e o deploy (`cookme-recipes.vercel.app`), siga [docs/GOOGLE_SETUP.md](docs/GOOGLE_SETUP.md).
 
 | Script | O que faz |
 | --- | --- |

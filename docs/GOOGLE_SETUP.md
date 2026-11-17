@@ -11,7 +11,13 @@ Com o Google configurado, o CookMe pede login, e cada pessoa que entra guarda os
 
 No menu **Google Auth Platform**:
 
-1. **Branding:** nome do app `CookMe` e e-mail de suporte.
+1. **Branding:** nome do app `CookMe`, e-mail de suporte, logo (opcional: `public/icon-512.png`) e os links do app, que já existem no próprio site:
+   - Página inicial: `https://cookme-recipes.vercel.app`
+   - Política de Privacidade: `https://cookme-recipes.vercel.app/privacidade`
+   - Termos de Serviço: `https://cookme-recipes.vercel.app/termos`
+   - Domínios autorizados: `cookme-recipes.vercel.app`
+
+   Para as duas páginas mostrarem um e-mail de contato (em vez de “o e-mail de suporte exibido na tela de login do Google”), defina `NEXT_PUBLIC_CONTACT_EMAIL` na Vercel e faça um novo deploy.
 2. **Público (Audience):** tipo **Externo**. Enquanto estiver em **Teste**, adicione em *Usuários de teste* os e-mails que vão usar o app.
 3. **Acesso a dados (Data access):** adicione os escopos
    - `openid`, `.../auth/userinfo.email`, `.../auth/userinfo.profile`
@@ -31,7 +37,7 @@ Em **Clientes → Criar cliente**:
 - Tipo: **Aplicativo da Web**
 - **URIs de redirecionamento autorizados:**
   - `http://localhost:3000/api/auth/callback`
-  - `https://cookme-receitas.vercel.app/api/auth/callback`
+  - `https://cookme-recipes.vercel.app/api/auth/callback`
 
 > O caminho é `/api/auth/callback`, diferente do TrackMe (`/api/auth/callback/google`), porque o CookMe (assim como o StoryForge) não usa o NextAuth.
 
@@ -41,7 +47,7 @@ Copie o **ID do cliente** e a **chave secreta**.
 
 | Variável | Valor |
 | --- | --- |
-| `APP_URL` | `http://localhost:3000` (local) ou `https://cookme-receitas.vercel.app` (produção), sem barra no final |
+| `APP_URL` | `http://localhost:3000` (local) ou `https://cookme-recipes.vercel.app` (produção), sem barra no final |
 | `GOOGLE_CLIENT_ID` | ID do cliente |
 | `GOOGLE_CLIENT_SECRET` | Chave secreta |
 | `SESSION_SECRET` | 32+ caracteres aleatórios. Gere com o comando abaixo |
