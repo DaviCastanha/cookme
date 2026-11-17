@@ -1,7 +1,9 @@
 // Design tokens. Components must use these variables, never hard-coded colors.
-// A dark theme would override the same variables.
+// Everything a theme can change is in `theme-defaults`. `:root` uses it as the default theme
+// (Terracota), and every block in `_themes.scss` includes it first and then overrides, so a theme
+// preview nested inside another theme never inherits the outer one's values.
 
-:root {
+@mixin theme-defaults {
   color-scheme: light;
 
   // Warm kitchen tones: cream paper, espresso ink, terracotta accent.
@@ -20,7 +22,7 @@
   --color-on-primary: #ffffff;
   --color-border: #ece3d8;
   --color-border-strong: #dccfbf;
-  --color-focus: rgba(194, 86, 47, 0.3);
+  --color-focus: color-mix(in srgb, var(--color-primary) 30%, transparent);
   --color-overlay: rgba(42, 33, 27, 0.32);
   --color-danger: #c13f4f;
   --color-danger-soft: #fae6e8;
@@ -28,9 +30,16 @@
   --color-success-soft: #e5f2e7;
   --color-warning: #b7791f;
   --color-warning-soft: #fdf3e1;
-  --color-highlight: rgba(194, 86, 47, 0.14);
+  --color-highlight: color-mix(in srgb, var(--color-primary) 14%, transparent);
   --color-search-hit: rgba(250, 204, 21, 0.45);
   --color-checked: #a99b8d;
+  --color-on-danger: #ffffff;
+  // Toasts are an inverted pill (dark on light themes).
+  --color-toast-bg: var(--color-text);
+  --color-toast-text: #ffffff;
+  --color-toast-accent: color-mix(in srgb, var(--color-primary) 40%, #ffffff);
+  // Small controls floating over a photo (cover buttons).
+  --color-glass: color-mix(in srgb, var(--color-surface) 92%, transparent);
 
   // Item palette (folder/recipe icons), named after ingredients. Strong (icon) and soft (chip) tones.
   --palette-tomato: #d2553f;
@@ -58,8 +67,26 @@
   --palette-pepper: #6f6a66;
   --palette-pepper-soft: #edeae7;
 
-  --font-ui: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-serif: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  // Shadows are tinted with each theme's ink (`--shadow-rgb`) and its accent.
+  --shadow-rgb: 60 38 22;
+  --shadow-soft: 0 8px 28px rgb(var(--shadow-rgb) / 0.08);
+  --shadow-pop: 0 14px 44px rgb(var(--shadow-rgb) / 0.16), 0 2px 6px rgb(var(--shadow-rgb) / 0.06);
+  --shadow-fab: 0 10px 26px color-mix(in srgb, var(--color-primary) 38%, transparent);
+  --shadow-accent: 0 6px 16px color-mix(in srgb, var(--color-primary) 28%, transparent);
+  --shadow-inset: inset 0 0 0 1px var(--color-border);
+}
+
+:root {
+  @include theme-defaults;
+
+  --font-ui: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
@@ -78,16 +105,7 @@
   --space-8: 32px;
   --space-10: 40px;
 
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
   --radius-full: 999px;
-
-  --shadow-soft: 0 8px 28px rgba(60, 38, 22, 0.08);
-  --shadow-pop: 0 14px 44px rgba(60, 38, 22, 0.16), 0 2px 6px rgba(60, 38, 22, 0.06);
-  --shadow-fab: 0 10px 26px rgba(194, 86, 47, 0.38);
-  --shadow-inset: inset 0 0 0 1px var(--color-border);
 
   --duration-fast: 120ms;
   --duration-base: 200ms;

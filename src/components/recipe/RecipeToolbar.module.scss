@@ -129,7 +129,7 @@
   color: var(--color-on-primary);
   font-size: var(--text-sm);
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(194, 86, 47, 0.25);
+  box-shadow: var(--shadow-accent);
   transition: background var(--duration-fast);
 
   &:hover {

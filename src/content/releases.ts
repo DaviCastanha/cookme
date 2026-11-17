@@ -13,6 +13,16 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: '1.2.0',
+    date: '2026-11-17',
+    title: 'Temas de cores',
+    items: [
+      'Escolha as cores do app em Configurações → Tema: Terracota, Vintage, Moderna, Azulejo, Toscana, Confeitaria ou Café, que é escuro e bom para cozinhar à noite.',
+      'Cada tema muda o app inteiro, inclusive o modo Cozinhar. As cores das suas pastas continuam as mesmas.',
+      'O tema vale para o aparelho: dá para usar um no celular e outro no computador.',
+    ],
+  },
+  {
     version: '1.1.0',
     date: '2026-11-17',
     title: 'Link público, Story e arrastar no celular',

@@ -4,6 +4,8 @@ import { DialogHost } from '@/components/ui/DialogHost';
 import { ToastHost } from '@/components/ui/ToastHost';
 import { SyncProvider } from '@/features/sync/SyncProvider';
 import { PwaSetup } from '@/features/pwa/PwaSetup';
+import { ThemeSync } from '@/features/theme/themeStore';
+import { DEFAULT_THEME_ID, getTheme, themeBootScript } from '@/features/theme/themes';
 import '@/styles/globals.scss';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -23,14 +25,19 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#faf6f0',
+  themeColor: getTheme(DEFAULT_THEME_ID).bg,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${fraunces.variable}`}>
+    // The inline script sets data-theme before React hydrates; suppressHydrationWarning keeps it.
+    <html lang="pt-BR" className={`${inter.variable} ${fraunces.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript() }} />
+      </head>
       <body>
         {children}
+        <ThemeSync />
         <SyncProvider />
         <PwaSetup />
         <DialogHost />

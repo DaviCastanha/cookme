@@ -38,7 +38,7 @@
   border-radius: 20px;
   background: var(--color-primary);
   color: var(--color-on-primary);
-  box-shadow: 0 10px 24px rgba(194, 86, 47, 0.3);
+  box-shadow: var(--shadow-fab);
   transform: rotate(-6deg);
 }
 

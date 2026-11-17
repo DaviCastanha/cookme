@@ -36,7 +36,7 @@ A versão fica em `package.json` e em `src/content/releases.ts`, que guarda as n
 
 O popup aparece uma vez por versão em cada aparelho; quem acabou de chegar não vê (tudo é novo para essa pessoa).
 
-## O que já funciona (1.1.0)
+## O que já funciona (1.2.0)
 
 - **Cadernos**: criar, renomear, excluir, exportar/importar backup. O app abre direto no último caderno usado.
 - **Pastas e receitas**: árvore com ícone e cor (ícones de comida, cores com nome de ingrediente), arrastar e soltar (no celular: segurar e arrastar), Mover para…, Duplicar, renomear com F2 ou duplo clique, contagem de receitas por pasta.
@@ -54,10 +54,11 @@ O popup aparece uma vez por versão em cada aparelho; quem acabou de chegar não
   - arquivo `.cookme` (com fotos e áudios) para importar no CookMe de outra pessoa.
 - **Busca** (Ctrl+K ou barra de busca): por nome, pasta ou ingrediente, levando ao trecho.
 - **Google Drive**: login com um consentimento, pasta visível `CookMe`, sincronização entre aparelhos, offline, tratamento de conflitos.
+- **Temas de cores** (Configurações → Tema): Terracota, Vintage, Moderna, Azulejo, Toscana, Confeitaria e Café (escuro). Valem por aparelho.
 - **App instalável** (PWA) no computador e no celular.
 
 ## Fica para depois
 
 - Ajustar porções (recalcular quantidades) e lista de compras a partir dos ingredientes marcados.
 - Ler foto de receita escrita à mão (OCR).
-- Tags além das pastas, favoritos e tema escuro.
+- Tags além das pastas e favoritos.

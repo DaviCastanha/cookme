@@ -1,0 +1,189 @@
+// Color themes, applied as `data-theme` on <html> (see features/theme). Each block overrides the
+// color tokens of `_tokens.scss`; accents, focus rings and tinted shadows derive from them there.
+// Every block starts from `tokens.theme-defaults` (Terracota) and overrides what differs.
+// Keep each theme's `--color-bg` in sync with `bg` in features/theme/themes.ts (a test checks it).
+//
+// The same selectors also work on any element, so the picker shows a live preview of each theme.
+
+@use 'tokens';
+
+[data-theme='terracota'] {
+  @include tokens.theme-defaults;
+}
+
+[data-theme='vintage'] {
+  @include tokens.theme-defaults;
+
+  // Butter paper, teal enamel pots and a cherry-red warning.
+  --color-bg: #f5eedb;
+  --color-bg-sunken: #ece3cb;
+  --color-surface: #fffaee;
+  --color-surface-hover: #f7efdc;
+  --color-text: #2b2620;
+  --color-text-soft: #4f463a;
+  --color-muted: #7d7260;
+  --color-faint: #b3a78f;
+  --color-primary: #2a7a72;
+  --color-primary-strong: #1f5f58;
+  --color-primary-soft: #d6ebe6;
+  --color-primary-softer: #ebf5f2;
+  --color-border: #e8dec4;
+  --color-border-strong: #d6c8a8;
+  --color-overlay: rgba(43, 38, 32, 0.32);
+  --color-danger: #c0392b;
+  --color-danger-soft: #f8e0dc;
+  --color-checked: #a99c84;
+  --shadow-rgb: 70 55 25;
+}
+
+[data-theme='moderna'] {
+  @include tokens.theme-defaults;
+
+  // White, graphite, square corners and no serif.
+  --color-bg: #f5f5f3;
+  --color-bg-sunken: #ececea;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f3f3f1;
+  --color-text: #181818;
+  --color-text-soft: #3d3d3b;
+  --color-muted: #6f6f6b;
+  --color-faint: #a9a9a4;
+  --color-primary: #1e1e1e;
+  --color-primary-strong: #000000;
+  --color-primary-soft: #e9e9e6;
+  --color-primary-softer: #f3f3f1;
+  --color-border: #e6e6e3;
+  --color-border-strong: #d3d3cf;
+  --color-overlay: rgba(0, 0, 0, 0.32);
+  --color-checked: #a5a5a0;
+  --shadow-rgb: 0 0 0;
+  --color-toast-accent: #d4f06b;
+
+  --font-serif: var(--font-ui);
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+[data-theme='azulejo'] {
+  @include tokens.theme-defaults;
+
+  // White china and cobalt blue.
+  --color-bg: #f4f6fa;
+  --color-bg-sunken: #e9eef6;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f4fa;
+  --color-text: #18213a;
+  --color-text-soft: #3b4660;
+  --color-muted: #69738c;
+  --color-faint: #a3abbe;
+  --color-primary: #2251a8;
+  --color-primary-strong: #183d85;
+  --color-primary-soft: #dfe7f7;
+  --color-primary-softer: #eef2fb;
+  --color-border: #e2e7f0;
+  --color-border-strong: #cdd5e3;
+  --color-overlay: rgba(24, 33, 58, 0.32);
+  --color-checked: #9aa3b7;
+  --shadow-rgb: 20 35 75;
+}
+
+[data-theme='toscana'] {
+  @include tokens.theme-defaults;
+
+  // Raw linen and olive oil.
+  --color-bg: #f3f1e7;
+  --color-bg-sunken: #e9e6d8;
+  --color-surface: #fcfbf5;
+  --color-surface-hover: #f3f1e6;
+  --color-text: #24271c;
+  --color-text-soft: #474b3a;
+  --color-muted: #73765f;
+  --color-faint: #aeb09a;
+  --color-primary: #5f6f2a;
+  --color-primary-strong: #4b5820;
+  --color-primary-soft: #e5e9d2;
+  --color-primary-softer: #f1f3e6;
+  --color-border: #e5e2d2;
+  --color-border-strong: #d3cfb9;
+  --color-overlay: rgba(36, 39, 28, 0.32);
+  --color-danger: #b5452f;
+  --color-danger-soft: #f6e1da;
+  --color-checked: #a3a58e;
+  --shadow-rgb: 45 48 20;
+}
+
+[data-theme='confeitaria'] {
+  @include tokens.theme-defaults;
+
+  // Pink icing and raspberry.
+  --color-bg: #fbf3f2;
+  --color-bg-sunken: #f5e7e6;
+  --color-surface: #fffafa;
+  --color-surface-hover: #fbefef;
+  --color-text: #34212a;
+  --color-text-soft: #5a4450;
+  --color-muted: #8a7480;
+  --color-faint: #bfa9b3;
+  --color-primary: #c2356a;
+  --color-primary-strong: #a1264f;
+  --color-primary-soft: #f9dde7;
+  --color-primary-softer: #fdeef3;
+  --color-border: #f1e1e2;
+  --color-border-strong: #e5ccd0;
+  --color-overlay: rgba(52, 33, 42, 0.32);
+  --color-danger: #b8322b;
+  --color-danger-soft: #f8dfdc;
+  --color-checked: #b39fa8;
+  --shadow-rgb: 90 30 50;
+}
+
+[data-theme='cafe'] {
+  @include tokens.theme-defaults;
+
+  // Dark: espresso and copper.
+  color-scheme: dark;
+
+  --color-bg: #1d1714;
+  --color-bg-sunken: #17120f;
+  --color-surface: #261e1a;
+  --color-surface-hover: #30261f;
+  --color-text: #f2e9df;
+  --color-text-soft: #d8cabc;
+  --color-muted: #a69484;
+  --color-faint: #6f6054;
+  --color-primary: #e2835a;
+  --color-primary-strong: #f09a74;
+  --color-primary-soft: #3e2b22;
+  --color-primary-softer: #2f221c;
+  --color-on-primary: #1d1714;
+  --color-border: #362b25;
+  --color-border-strong: #4a3c33;
+  --color-overlay: rgba(0, 0, 0, 0.55);
+  --color-danger: #ef6f7e;
+  --color-danger-soft: #43222a;
+  --color-on-danger: #1d1714;
+  --color-success: #74c283;
+  --color-success-soft: #1f3526;
+  --color-warning: #e3ab52;
+  --color-warning-soft: #3d2f18;
+  --color-search-hit: rgba(250, 204, 21, 0.28);
+  --color-checked: #7f6f62;
+  --color-toast-bg: #3b302a;
+  --color-toast-text: #f2e9df;
+  --color-toast-accent: #f0a582;
+
+  --shadow-rgb: 0 0 0;
+  --shadow-soft: 0 8px 28px rgb(0 0 0 / 0.35);
+  --shadow-pop: 0 14px 44px rgb(0 0 0 / 0.5), 0 0 0 1px #3a2f29;
+
+  // Folder colors keep their hue; the soft chips become dark tints of it.
+  @each $name in tomato, carrot, saffron, olive, basil, mint, blueberry, plum, beet, cinnamon, cocoa, pepper {
+    --palette-#{$name}-soft: color-mix(in srgb, var(--palette-#{$name}) 22%, #261e1a);
+  }
+  --palette-cocoa: #b48468;
+  --palette-pepper: #a39d97;
+  --palette-blueberry: #7d95dc;
+  --palette-plum: #b285cf;
+}

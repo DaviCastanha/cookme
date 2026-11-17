@@ -85,6 +85,17 @@ PC/tablet: lista de pastas e receitas à esquerda (redimensionável, Ctrl+\ esco
 
 No celular, o arrastar e soltar do HTML não funciona com o dedo. A lista usa "segurar e arrastar" (`useTouchDrag` em `ExplorerTree.tsx`): segurar parado por ~0,4 s pega o item (vibra), e um deslize rápido continua rolando a lista. Enquanto arrasta, a página não rola, a lista rola sozinha nas bordas e um rótulo segue o dedo. Em pastas, o terço de cima insere antes e o resto solta dentro. O menu de contexto do toque longo é ignorado (o menu fica no ⋯).
 
+### 7b. Temas de cores
+
+Os componentes só usam variáveis CSS (`styles/_tokens.scss`). Tudo o que um tema pode mudar (cores, paleta das pastas, sombras, cantos e a fonte dos títulos) fica no mixin `theme-defaults`, que é o tema Terracota e é aplicado no `:root`. Cada tema em `styles/_themes.scss` é um bloco `[data-theme='…']` que inclui esse mixin e sobrescreve o que muda. Anel de foco, realce, sombras coloridas e o destaque dos toasts são derivados da cor principal com `color-mix`, então um tema novo só precisa das cores-base.
+
+- **Lista** em `features/theme/themes.ts` (nome, descrição, cor de fundo para o `theme-color` do navegador). Um teste confere que a lista e o SCSS batem.
+- **Sem piscar**: um script inline no `<head>` (`themeBootScript`) lê `localStorage` e põe `data-theme` no `<html>` antes da primeira pintura, como manda o guia "Preventing flash before hydration" do Next; o `<html>` tem `suppressHydrationWarning`. `ThemeSync` reaplica depois da hidratação e acompanha outras abas.
+- **Prévia ao vivo**: o seletor (Configurações → Tema) desenha cada cartão com o próprio `data-theme`. Como todo bloco parte do mixin, uma prévia não herda nada do tema em uso.
+- **Por aparelho**, não sincronizado: o tema é preferência de tela, como a largura do painel.
+- **Café** é o tema escuro: `color-scheme: dark`, textos sobre a cor principal ficam escuros (`--color-on-primary`, `--color-on-danger`) e os fundos das cores de pasta viram tons escuros da mesma cor.
+- A imagem de compartilhar mantém as cores padrão, para a receita ter a mesma cara para quem recebe. A página pública `/r/<id>` segue o tema salvo no navegador de quem abre (o padrão, para quem nunca usou o CookMe).
+
 ### 8. Abrir direto no último caderno
 
 `/` redireciona para o último caderno usado neste aparelho (`lib/utils/routes.ts`). **Todos os cadernos** leva a `/?inicio=1`, que mostra a lista sem redirecionar.

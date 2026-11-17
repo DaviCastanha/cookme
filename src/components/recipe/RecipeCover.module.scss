@@ -11,10 +11,11 @@
   aspect-ratio: 16 / 7;
   border-radius: var(--radius-lg);
   border: 1.5px dashed var(--color-border-strong);
+  --cover-check: color-mix(in srgb, var(--color-primary) 4%, transparent);
   // Faint checkered tablecloth, so an empty cover still feels like a kitchen.
   background:
-    repeating-linear-gradient(0deg, transparent 0 22px, rgba(194, 86, 47, 0.035) 22px 44px),
-    repeating-linear-gradient(90deg, transparent 0 22px, rgba(194, 86, 47, 0.035) 22px 44px),
+    repeating-linear-gradient(0deg, transparent 0 22px, var(--cover-check) 22px 44px),
+    repeating-linear-gradient(90deg, transparent 0 22px, var(--cover-check) 22px 44px),
     var(--color-bg);
   color: var(--color-muted);
   transition:
@@ -99,7 +100,7 @@
     height: 32px;
     padding: 0 12px;
     border-radius: var(--radius-full);
-    background: rgba(255, 253, 249, 0.92);
+    background: var(--color-glass);
     backdrop-filter: blur(6px);
     color: var(--color-text);
     font-size: var(--text-sm);

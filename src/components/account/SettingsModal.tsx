@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, Info, Keyboard, Sparkles } from 'lucide-react';
+import { Download, Info, Keyboard, Palette, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { downloadBlob, exportProject } from '@/features/projects/backup';
@@ -8,6 +8,7 @@ import { useStatusStore } from '@/stores/statusStore';
 import { useAboutStore } from '@/stores/aboutStore';
 import { APP_VERSION } from '@/content/releases';
 import { AccountSection } from './AccountSection';
+import { ThemePicker } from './ThemePicker';
 import styles from './SettingsModal.module.scss';
 
 const SHORTCUTS: [string, string][] = [
@@ -26,6 +27,14 @@ export function SettingsModal({ open, onClose, projectId }: { open: boolean; onC
       <section className={styles.section}>
         <h3>Conta e armazenamento</h3>
         <AccountSection />
+      </section>
+
+      <section className={styles.section}>
+        <h3>
+          <Palette size={15} /> Tema
+        </h3>
+        <ThemePicker />
+        <p className={styles.hint}>Vale para este aparelho.</p>
       </section>
 
       {projectId && (
